@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Expenditure</string>
+    <string name="login_title">Login</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="login_button">Login</string>
+    <string name="dashboard_title">Dashboard</string>
+    <string name="add_expense">Add Expense</string>
+    <string name="add_income">Add Income</string>
+    <string name="manage_transactions">Manage Transactions</string>
+    <string name="lending_management">Lending Management</string>
+</resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_dashboard"
+        android:icon="@drawable/ic_home"
+        android:title="Home" />
+    <!-- Items Removed -->
+    <item
+        android:id="@+id/nav_transactions"
+        android:icon="@drawable/ic_transaction"
+        android:title="Records" />
+    <item
+        android:id="@+id/nav_lending"
+        android:icon="@drawable/ic_lending"
+        android:title="Lending" />
+</menu>
