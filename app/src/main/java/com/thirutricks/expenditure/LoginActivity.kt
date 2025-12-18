@@ -9,11 +9,10 @@ import com.thirutricks.expenditure.api.RetrofitClient
 import com.thirutricks.expenditure.databinding.ActivityLoginBinding
 import com.thirutricks.expenditure.model.LoginRequest
 import com.thirutricks.expenditure.model.LoginResponse
+import com.thirutricks.expenditure.utils.NetworkErrorHandler
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
 
 class LoginActivity : AppCompatActivity() {
 
@@ -79,14 +78,7 @@ class LoginActivity : AppCompatActivity() {
                         Toast.makeText(this@LoginActivity, message, Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    val errorMsg = when (response.code()) {
-                        401 -> "Invalid credentials"
-                        403 -> "Access forbidden"
-                        404 -> "Service not found"
-                        500 -> "Server error. Please try again later"
-                        503 -> "Service unavailable. Please try again later"
-                        else -> "Login failed. Please try again"
-                    }
+                    val errorMsg = NetworkErrorHandler.getHttpErrorMessage(response.code())
                     Toast.makeText(this@LoginActivity, errorMsg, Toast.LENGTH_SHORT).show()
                 }
             }
@@ -94,11 +86,7 @@ class LoginActivity : AppCompatActivity() {
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                 binding.progressBar.visibility = View.GONE
                 binding.btnLogin.isEnabled = true
-                val errorMsg = when (t) {
-                    is UnknownHostException -> "No internet connection"
-                    is SocketTimeoutException -> "Connection timeout"
-                    else -> "Network error. Please check your connection"
-                }
+                val errorMsg = NetworkErrorHandler.getNetworkErrorMessage(t)
                 Toast.makeText(this@LoginActivity, errorMsg, Toast.LENGTH_SHORT).show()
             }
         })

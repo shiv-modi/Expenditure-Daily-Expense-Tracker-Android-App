@@ -22,7 +22,10 @@
 
 # Retrofit
 -dontwarn retrofit2.**
--keep class retrofit2.** { *; }
+-keep class retrofit2.Retrofit { *; }
+-keep class retrofit2.Response { *; }
+-keep class retrofit2.Call { *; }
+-keep class retrofit2.Callback { *; }
 -keepattributes Signature
 -keepattributes Exceptions
 -keepclasseswithmembers class * {
