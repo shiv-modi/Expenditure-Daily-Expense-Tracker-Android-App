@@ -72,12 +72,13 @@ data class Lending(
 ) {
     /**
      * Returns the capitalized status for display purposes.
-     * Cached as a computed property to avoid repeated string operations.
+     * Lazily initialized and cached to avoid repeated string operations.
      */
-    val displayStatus: String
-        get() = status.replaceFirstChar { 
+    val displayStatus: String by lazy {
+        status.replaceFirstChar { 
             if (it.isLowerCase()) it.titlecase(java.util.Locale.getDefault()) else it.toString() 
         }
+    }
 }
 
 data class LendingData(

@@ -67,8 +67,13 @@ class SessionManager(context: Context) {
             }
             
             val payload = parts[1]
-            // URL safe decoding for JWT tokens
-            val decodedBytes = Base64.decode(payload, Base64.URL_SAFE)
+            // URL safe decoding for JWT tokens (handles both padded and unpadded)
+            val decodedBytes = try {
+                Base64.decode(payload, Base64.URL_SAFE)
+            } catch (e: IllegalArgumentException) {
+                // Try with padding if URL_SAFE fails
+                Base64.decode(payload, Base64.URL_SAFE or Base64.NO_PADDING)
+            }
             val decodedString = String(decodedBytes)
             val jsonObject = JSONObject(decodedString)
             

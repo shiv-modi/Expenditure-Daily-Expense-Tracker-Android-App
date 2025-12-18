@@ -79,8 +79,11 @@ class LoginActivity : AppCompatActivity() {
                 } else {
                     val errorMsg = when (response.code()) {
                         401 -> "Invalid credentials"
+                        403 -> "Access forbidden"
+                        404 -> "Service not found"
                         500 -> "Server error. Please try again later"
-                        else -> "Login failed: ${response.message()}"
+                        503 -> "Service unavailable. Please try again later"
+                        else -> "Login failed. Please try again"
                     }
                     Toast.makeText(this@LoginActivity, errorMsg, Toast.LENGTH_SHORT).show()
                 }
