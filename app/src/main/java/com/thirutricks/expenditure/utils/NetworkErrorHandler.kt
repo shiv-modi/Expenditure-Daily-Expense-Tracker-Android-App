@@ -1,5 +1,10 @@
 package com.thirutricks.expenditure.utils
 
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
+import javax.net.ssl.SSLException
+
 /**
  * NetworkErrorHandler provides utility methods for handling network errors
  * and HTTP status codes with user-friendly messages.
@@ -33,10 +38,10 @@ object NetworkErrorHandler {
      */
     fun getNetworkErrorMessage(throwable: Throwable): String {
         return when (throwable) {
-            is java.net.UnknownHostException -> "No internet connection"
-            is java.net.SocketTimeoutException -> "Connection timeout"
-            is java.net.ConnectException -> "Could not connect to server"
-            is javax.net.ssl.SSLException -> "Secure connection failed"
+            is UnknownHostException -> "No internet connection"
+            is SocketTimeoutException -> "Connection timeout"
+            is ConnectException -> "Could not connect to server"
+            is SSLException -> "Secure connection failed"
             else -> "Network error. Please check your connection"
         }
     }

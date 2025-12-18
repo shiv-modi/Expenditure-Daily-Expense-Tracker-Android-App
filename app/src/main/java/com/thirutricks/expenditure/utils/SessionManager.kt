@@ -73,7 +73,7 @@ class SessionManager(context: Context) {
                 Base64.decode(payload, Base64.URL_SAFE)
             } catch (e: IllegalArgumentException) {
                 // Try without padding for JWT tokens that don't include padding
-                Base64.decode(payload, Base64.NO_PADDING or Base64.URL_SAFE)
+                Base64.decode(payload, Base64.URL_SAFE or Base64.NO_PADDING)
             }
             val decodedString = String(decodedBytes)
             val jsonObject = JSONObject(decodedString)
