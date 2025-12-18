@@ -1,6 +1,7 @@
 package com.thirutricks.expenditure.model
 
 import com.google.gson.annotations.SerializedName
+import java.util.Locale
 
 data class ApiResponse(
     val status: String,
@@ -76,7 +77,7 @@ data class Lending(
      */
     val displayStatus: String by lazy {
         status.replaceFirstChar { 
-            if (it.isLowerCase()) it.titlecase(java.util.Locale.getDefault()) else it.toString() 
+            if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() 
         }
     }
 }

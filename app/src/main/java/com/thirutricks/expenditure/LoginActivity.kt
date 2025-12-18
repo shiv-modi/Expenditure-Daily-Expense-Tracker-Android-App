@@ -12,6 +12,8 @@ import com.thirutricks.expenditure.model.LoginResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 class LoginActivity : AppCompatActivity() {
 
@@ -92,9 +94,9 @@ class LoginActivity : AppCompatActivity() {
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                 binding.progressBar.visibility = View.GONE
                 binding.btnLogin.isEnabled = true
-                val errorMsg = when {
-                    t is java.net.UnknownHostException -> "No internet connection"
-                    t is java.net.SocketTimeoutException -> "Connection timeout"
+                val errorMsg = when (t) {
+                    is UnknownHostException -> "No internet connection"
+                    is SocketTimeoutException -> "Connection timeout"
                     else -> "Network error. Please check your connection"
                 }
                 Toast.makeText(this@LoginActivity, errorMsg, Toast.LENGTH_SHORT).show()
