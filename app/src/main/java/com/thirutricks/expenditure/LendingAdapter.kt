@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.thirutricks.expenditure.model.Lending
+import java.util.Locale
 
 class LendingAdapter(private var lendings: List<Lending>) :
     RecyclerView.Adapter<LendingAdapter.ViewHolder>() {
@@ -32,17 +33,15 @@ class LendingAdapter(private var lendings: List<Lending>) :
         holder.tvAmount.text = String.format("₹%.2f", lending.amount)
         holder.tvDescription.text = lending.description
         holder.tvDate.text = lending.dateOfLending
-        holder.tvStatus.text = lending.status.capitalize()
+        holder.tvStatus.text = lending.status.replaceFirstChar { 
+            if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() 
+        }
 
         if (lending.status.equals("received", ignoreCase = true)) {
             holder.tvStatus.setTextColor(Color.parseColor("#4CAF50")) // Green
         } else {
             holder.tvStatus.setTextColor(Color.parseColor("#FF9800")) // Orange
         }
-    }
-
-    private fun String.capitalize(): String {
-        return this.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
     }
 
     override fun getItemCount() = lendings.size

@@ -104,6 +104,19 @@ class AddIncomeActivity : AppCompatActivity() {
             Toast.makeText(this, "Please enter amount", Toast.LENGTH_SHORT).show()
             return
         }
+        
+        // Validate numeric input
+        val amount = try {
+            amountStr.toDouble()
+        } catch (e: NumberFormatException) {
+            Toast.makeText(this, "Please enter a valid amount", Toast.LENGTH_SHORT).show()
+            return
+        }
+        
+        if (amount <= 0) {
+            Toast.makeText(this, "Amount must be greater than 0", Toast.LENGTH_SHORT).show()
+            return
+        }
 
         if (categories.isEmpty()) {
              Toast.makeText(this, "No categories available", Toast.LENGTH_SHORT).show()
@@ -123,7 +136,7 @@ class AddIncomeActivity : AppCompatActivity() {
         RetrofitClient.instance.addIncome(
             date = date,
             categoryId = selectedCategory.categoryId,
-            amount = amountStr.toDouble(),
+            amount = amount,
             description = description
         ).enqueue(object : Callback<ApiResponse> {
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {

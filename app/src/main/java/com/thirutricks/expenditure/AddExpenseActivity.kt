@@ -103,6 +103,19 @@ class AddExpenseActivity : AppCompatActivity() {
             Toast.makeText(this, "Please enter cost", Toast.LENGTH_SHORT).show()
             return
         }
+        
+        // Validate numeric input
+        val cost = try {
+            costStr.toDouble()
+        } catch (e: NumberFormatException) {
+            Toast.makeText(this, "Please enter a valid cost amount", Toast.LENGTH_SHORT).show()
+            return
+        }
+        
+        if (cost <= 0) {
+            Toast.makeText(this, "Cost must be greater than 0", Toast.LENGTH_SHORT).show()
+            return
+        }
 
         if (categories.isEmpty()) {
              Toast.makeText(this, "No categories available", Toast.LENGTH_SHORT).show()
@@ -122,7 +135,7 @@ class AddExpenseActivity : AppCompatActivity() {
         RetrofitClient.instance.addExpense(
             date = date,
             categoryId = selectedCategory.categoryId,
-            cost = costStr.toDouble(),
+            cost = cost,
             description = description
         ).enqueue(object : Callback<ApiResponse> {
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {

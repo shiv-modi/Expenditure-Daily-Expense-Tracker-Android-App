@@ -52,13 +52,13 @@ class SessionManager(context: Context) {
         try {
             val parts = token.split(".")
             if (parts.size != 3) {
-                return false // Invalid format, treat as not expired or invalid? If invalid format, let's say it IS expired/invalid.
+                // Invalid JWT format, treat as expired
+                return true
             }
-            // However, the prompt says "if jwt token is expired". If invalid, we probably can't use it.
-            // Let's decode payload
+            
             val payload = parts[1]
-            // Url safe decoding
-            val decodedBytes = Base64.decode(payload, Base64.URL_SAFE)
+            // URL safe decoding
+            val decodedBytes = Base64.decode(payload, Base64.URL_SAFE or Base64.NO_WRAP)
             val decodedString = String(decodedBytes)
             val jsonObject = JSONObject(decodedString)
             
@@ -67,14 +67,14 @@ class SessionManager(context: Context) {
                 val currentTime = System.currentTimeMillis() / 1000
                 return currentTime > exp
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            // If we can't parse it, assume it's valid (lifetime) as per user request "if not then use it for lifetime"
-            // Or if it fails to parse, maybe it's not a JWT? 
-            // The user said: "yes jwt will have expiry, if not then use it for lifetime"
-            // So if parsing fails or no exp, return false (not expired).
+            
+            // If no expiry field, treat token as valid for lifetime
             return false
+        } catch (e: Exception) {
+            // Log error but don't expose sensitive information
+            android.util.Log.e("SessionManager", "Error parsing token", e)
+            // If parsing fails, assume token is expired/invalid for security
+            return true
         }
-        return false // Default to not expired
     }
 }

@@ -66,17 +66,28 @@ class LoginActivity : AppCompatActivity() {
                         RetrofitClient.setAuthToken(loginResponse.accessToken)
                         goToMainActivity()
                     } else {
-                        Toast.makeText(this@LoginActivity, loginResponse.message, Toast.LENGTH_SHORT).show()
+                        val message = loginResponse.message.ifEmpty { "Login failed" }
+                        Toast.makeText(this@LoginActivity, message, Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    Toast.makeText(this@LoginActivity, "Login failed: ${response.message()}", Toast.LENGTH_SHORT).show()
+                    val errorMsg = when (response.code()) {
+                        401 -> "Invalid credentials"
+                        500 -> "Server error. Please try again later"
+                        else -> "Login failed: ${response.message()}"
+                    }
+                    Toast.makeText(this@LoginActivity, errorMsg, Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                 binding.progressBar.visibility = View.GONE
                 binding.btnLogin.isEnabled = true
-                Toast.makeText(this@LoginActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                val errorMsg = when {
+                    t is java.net.UnknownHostException -> "No internet connection"
+                    t is java.net.SocketTimeoutException -> "Connection timeout"
+                    else -> "Network error: ${t.message}"
+                }
+                Toast.makeText(this@LoginActivity, errorMsg, Toast.LENGTH_SHORT).show()
             }
         })
     }
