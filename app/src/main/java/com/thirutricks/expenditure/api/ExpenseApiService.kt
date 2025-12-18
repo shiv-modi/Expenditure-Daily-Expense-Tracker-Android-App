@@ -6,24 +6,45 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
 
+/**
+ * ExpenseApiService defines all API endpoints for the Expenditure app.
+ * Includes authentication, dashboard, expense/income management, and lending features.
+ */
 interface ExpenseApiService {
 
-    // Auth
+    // Authentication
+    /**
+     * Authenticates user and returns JWT token.
+     * @param request LoginRequest containing email and password
+     * @return LoginResponse with access token on success
+     */
     @POST("includes/api/login.php")
     fun login(@Body request: LoginRequest): Call<LoginResponse>
 
     // Dashboard
+    /**
+     * Fetches dashboard data including balance, expenses, income, and categories.
+     * @return DashboardResponse with user's financial overview
+     */
     @GET("includes/api/dashboard.php")
     fun getDashboard(): Call<DashboardResponse>
 
     // Expenses
+    /**
+     * Adds a new expense entry.
+     * @param date Date of expense (format: yyyy-MM-dd)
+     * @param categoryId Category ID for the expense
+     * @param cost Amount of the expense
+     * @param description Description of the expense
+     * @return ApiResponse indicating success or failure
+     */
     @FormUrlEncoded
     @POST("includes/api/add-expense.php")
     fun addExpense(
         @Field("dateexpense") date: String,
         @Field("category") categoryId: Int,
         @Field("costitem") cost: Double,
-        @Field("category-description") description: String // Parameter name mismatch in doc vs here? Doc says 'category-description'
+        @Field("category-description") description: String
     ): Call<ApiResponse>
 
     @POST("includes/api/update-expense.php")
@@ -34,6 +55,14 @@ interface ExpenseApiService {
     fun deleteExpense(@Field("id") id: Int): Call<ApiResponse>
 
     // Income
+    /**
+     * Adds a new income entry.
+     * @param date Date of income (format: yyyy-MM-dd)
+     * @param categoryId Category ID for the income
+     * @param amount Amount of the income
+     * @param description Description of the income
+     * @return ApiResponse indicating success or failure
+     */
     @FormUrlEncoded
     @POST("includes/api/add-income.php")
     fun addIncome(
@@ -51,13 +80,11 @@ interface ExpenseApiService {
     fun deleteIncome(@Field("id") id: Int): Call<ApiResponse>
 
     // Categories
-    @FormUrlEncoded
-    @POST("includes/api/add-category.php")
-    fun addCategory(
-        @Field("category-name") name: String,
-        @Field("mode") mode: String
-    ): Call<ApiResponse>
-
+    /**
+     * Retrieves list of expense/income categories.
+     * @param mode Filter by "Expense" or "Income", null returns all categories
+     * @return CategoryResponse with list of categories
+     */
     @GET("includes/api/get-categories.php")
     fun getCategories(@Query("mode") mode: String?): Call<CategoryResponse>
 
@@ -81,18 +108,32 @@ interface ExpenseApiService {
     fun importCsv(@Part file: MultipartBody.Part): Call<ApiResponse>
 
     // Transactions List
+    /**
+     * Retrieves paginated list of transactions.
+     * @param page Page number for pagination
+     * @param limit Number of items per page
+     * @param type Filter by transaction type: "all", "expense", or "income"
+     * @return TransactionResponse with list of transactions
+     */
     @GET("includes/api/transactions.php")
     fun getTransactions(
         @Query("page") page: Int,
         @Query("limit") limit: Int,
-        @Query("type") type: String // "all", "expense", "income"
+        @Query("type") type: String
     ): Call<TransactionResponse>
 
     // Lending List
+    /**
+     * Retrieves paginated list of lending records.
+     * @param page Page number for pagination
+     * @param limit Number of items per page
+     * @param status Filter by status: "all", "pending", or "received"
+     * @return LendingResponse with list of lending records
+     */
     @GET("includes/api/lending-list.php")
     fun getLendingList(
         @Query("page") page: Int,
         @Query("limit") limit: Int,
-        @Query("status") status: String // "all", "pending", "received"
+        @Query("status") status: String
     ): Call<LendingResponse>
 }

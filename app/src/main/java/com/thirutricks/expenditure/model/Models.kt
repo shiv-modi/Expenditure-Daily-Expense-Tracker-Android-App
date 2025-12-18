@@ -1,6 +1,7 @@
 package com.thirutricks.expenditure.model
 
 import com.google.gson.annotations.SerializedName
+import java.util.Locale
 
 data class ApiResponse(
     val status: String,
@@ -69,7 +70,17 @@ data class Lending(
     @SerializedName("description") val description: String,
     @SerializedName("date") val dateOfLending: String,
     @SerializedName("status") val status: String
-)
+) {
+    /**
+     * Returns the capitalized status for display purposes.
+     * Lazily initialized and cached to avoid repeated string operations.
+     */
+    val displayStatus: String by lazy {
+        status.replaceFirstChar { 
+            if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() 
+        }
+    }
+}
 
 data class LendingData(
     val lending: List<Lending>

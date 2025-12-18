@@ -9,6 +9,7 @@ import com.thirutricks.expenditure.api.RetrofitClient
 import com.thirutricks.expenditure.databinding.ActivityLoginBinding
 import com.thirutricks.expenditure.model.LoginRequest
 import com.thirutricks.expenditure.model.LoginResponse
+import com.thirutricks.expenditure.utils.NetworkErrorHandler
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -37,14 +38,21 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnLogin.setOnClickListener {
-            val email = binding.etEmail.text.toString()
+            val email = binding.etEmail.text.toString().trim()
             val password = binding.etPassword.text.toString()
 
-            if (email.isNotEmpty() && password.isNotEmpty()) {
-                login(email, password)
-            } else {
+            if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
+            
+            // Basic email validation
+            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                Toast.makeText(this, "Please enter a valid email address", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            login(email, password)
         }
     }
 
@@ -66,17 +74,20 @@ class LoginActivity : AppCompatActivity() {
                         RetrofitClient.setAuthToken(loginResponse.accessToken)
                         goToMainActivity()
                     } else {
-                        Toast.makeText(this@LoginActivity, loginResponse.message, Toast.LENGTH_SHORT).show()
+                        val message = loginResponse.message.ifEmpty { "Login failed" }
+                        Toast.makeText(this@LoginActivity, message, Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    Toast.makeText(this@LoginActivity, "Login failed: ${response.message()}", Toast.LENGTH_SHORT).show()
+                    val errorMsg = NetworkErrorHandler.getHttpErrorMessage(response.code())
+                    Toast.makeText(this@LoginActivity, errorMsg, Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                 binding.progressBar.visibility = View.GONE
                 binding.btnLogin.isEnabled = true
-                Toast.makeText(this@LoginActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                val errorMsg = NetworkErrorHandler.getNetworkErrorMessage(t)
+                Toast.makeText(this@LoginActivity, errorMsg, Toast.LENGTH_SHORT).show()
             }
         })
     }

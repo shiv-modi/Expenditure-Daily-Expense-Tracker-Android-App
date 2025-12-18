@@ -9,16 +9,27 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
+/**
+ * RetrofitClient provides a singleton instance of the Retrofit API client.
+ * Configured with authentication interceptor and logging for API requests.
+ */
 object RetrofitClient {
 
-    private const val BASE_URL = "https://expenditure.iceiy.com/" // Emulator localhost
+    private const val BASE_URL = "https://expenditure.iceiy.com/"
 
     private var authToken: String? = null
 
+    /**
+     * Sets the authentication token to be used in API requests.
+     * @param token The JWT authentication token
+     */
     fun setAuthToken(token: String) {
         authToken = token
     }
 
+    /**
+     * Interceptor that adds Authorization header to all requests if token is available.
+     */
     private val authInterceptor = Interceptor { chain ->
         val original = chain.request()
         val builder = original.newBuilder()

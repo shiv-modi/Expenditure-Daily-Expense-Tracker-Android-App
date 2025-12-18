@@ -62,8 +62,4 @@ class MainActivity : AppCompatActivity() {
         }
         builder.show()
     }
-    
-    override fun onResume() {
-        super.onResume()
-    }
 }

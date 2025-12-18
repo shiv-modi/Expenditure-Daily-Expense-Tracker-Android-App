@@ -5,6 +5,10 @@ import android.content.SharedPreferences
 import android.util.Base64
 import org.json.JSONObject
 
+/**
+ * SessionManager handles user authentication token storage and validation.
+ * Uses SharedPreferences to persist JWT tokens and validates token expiry.
+ */
 class SessionManager(context: Context) {
     private var prefs: SharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
@@ -40,6 +44,7 @@ class SessionManager(context: Context) {
 
     /**
      * Checks if a token exists and is not expired.
+     * @return true if token is valid and not expired, false otherwise
      */
     fun isTokenValid(): Boolean {
         val token = getToken() ?: return false
@@ -48,17 +53,28 @@ class SessionManager(context: Context) {
         return !isTokenExpired(token)
     }
 
+    /**
+     * Validates JWT token expiry by decoding the payload and checking the 'exp' claim.
+     * @param token The JWT token to validate
+     * @return true if token is expired or invalid, false if valid
+     */
     private fun isTokenExpired(token: String): Boolean {
         try {
             val parts = token.split(".")
             if (parts.size != 3) {
-                return false // Invalid format, treat as not expired or invalid? If invalid format, let's say it IS expired/invalid.
+                // Invalid JWT format, treat as expired
+                return true
             }
-            // However, the prompt says "if jwt token is expired". If invalid, we probably can't use it.
-            // Let's decode payload
+            
             val payload = parts[1]
-            // Url safe decoding
-            val decodedBytes = Base64.decode(payload, Base64.URL_SAFE)
+            // URL safe decoding for JWT tokens
+            // Try URL_SAFE first (with padding), then NO_PADDING if that fails
+            val decodedBytes = try {
+                Base64.decode(payload, Base64.URL_SAFE)
+            } catch (e: IllegalArgumentException) {
+                // Try without padding for JWT tokens that don't include padding
+                Base64.decode(payload, Base64.URL_SAFE or Base64.NO_PADDING)
+            }
             val decodedString = String(decodedBytes)
             val jsonObject = JSONObject(decodedString)
             
@@ -67,14 +83,14 @@ class SessionManager(context: Context) {
                 val currentTime = System.currentTimeMillis() / 1000
                 return currentTime > exp
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            // If we can't parse it, assume it's valid (lifetime) as per user request "if not then use it for lifetime"
-            // Or if it fails to parse, maybe it's not a JWT? 
-            // The user said: "yes jwt will have expiry, if not then use it for lifetime"
-            // So if parsing fails or no exp, return false (not expired).
+            
+            // If no expiry field, treat token as valid for lifetime
             return false
+        } catch (e: Exception) {
+            // Log error but don't expose sensitive information
+            android.util.Log.e("SessionManager", "Error parsing token", e)
+            // If parsing fails, assume token is expired/invalid for security
+            return true
         }
-        return false // Default to not expired
     }
 }
