@@ -11,6 +11,7 @@ import com.thirutricks.expenditure.databinding.ActivityAddIncomeBinding
 import com.thirutricks.expenditure.model.ApiResponse
 import com.thirutricks.expenditure.model.Category
 import com.thirutricks.expenditure.model.CategoryResponse
+import com.thirutricks.expenditure.utils.ValidationUtils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -100,23 +101,14 @@ class AddIncomeActivity : AppCompatActivity() {
         val amountStr = binding.etAmount.text.toString()
         val description = binding.etDescription.text.toString()
         
-        if (amountStr.isEmpty()) {
-            Toast.makeText(this, "Please enter amount", Toast.LENGTH_SHORT).show()
+        // Validate numeric input using ValidationUtils
+        val validationResult = ValidationUtils.validateAmount(amountStr, "amount")
+        if (validationResult is ValidationUtils.ValidationResult.Error) {
+            Toast.makeText(this, validationResult.message, Toast.LENGTH_SHORT).show()
             return
         }
         
-        // Validate numeric input
-        val amount = try {
-            amountStr.toDouble()
-        } catch (e: NumberFormatException) {
-            Toast.makeText(this, "Please enter a valid amount", Toast.LENGTH_SHORT).show()
-            return
-        }
-        
-        if (amount <= 0) {
-            Toast.makeText(this, "Amount must be greater than 0", Toast.LENGTH_SHORT).show()
-            return
-        }
+        val amount = (validationResult as ValidationUtils.ValidationResult.Success).value
 
         if (categories.isEmpty()) {
              Toast.makeText(this, "No categories available", Toast.LENGTH_SHORT).show()

@@ -11,6 +11,7 @@ import com.thirutricks.expenditure.databinding.ActivityAddExpenseBinding
 import com.thirutricks.expenditure.model.ApiResponse
 import com.thirutricks.expenditure.model.Category
 import com.thirutricks.expenditure.model.CategoryResponse
+import com.thirutricks.expenditure.utils.ValidationUtils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -99,23 +100,14 @@ class AddExpenseActivity : AppCompatActivity() {
         val costStr = binding.etCost.text.toString()
         val description = binding.etDescription.text.toString()
         
-        if (costStr.isEmpty()) {
-            Toast.makeText(this, "Please enter cost", Toast.LENGTH_SHORT).show()
+        // Validate numeric input using ValidationUtils
+        val validationResult = ValidationUtils.validateAmount(costStr, "cost")
+        if (validationResult is ValidationUtils.ValidationResult.Error) {
+            Toast.makeText(this, validationResult.message, Toast.LENGTH_SHORT).show()
             return
         }
         
-        // Validate numeric input
-        val cost = try {
-            costStr.toDouble()
-        } catch (e: NumberFormatException) {
-            Toast.makeText(this, "Please enter a valid cost amount", Toast.LENGTH_SHORT).show()
-            return
-        }
-        
-        if (cost <= 0) {
-            Toast.makeText(this, "Cost must be greater than 0", Toast.LENGTH_SHORT).show()
-            return
-        }
+        val cost = (validationResult as ValidationUtils.ValidationResult.Success).value
 
         if (categories.isEmpty()) {
              Toast.makeText(this, "No categories available", Toast.LENGTH_SHORT).show()
