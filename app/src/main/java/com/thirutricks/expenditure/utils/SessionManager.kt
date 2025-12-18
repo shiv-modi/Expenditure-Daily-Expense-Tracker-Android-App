@@ -5,6 +5,10 @@ import android.content.SharedPreferences
 import android.util.Base64
 import org.json.JSONObject
 
+/**
+ * SessionManager handles user authentication token storage and validation.
+ * Uses SharedPreferences to persist JWT tokens and validates token expiry.
+ */
 class SessionManager(context: Context) {
     private var prefs: SharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
@@ -40,6 +44,7 @@ class SessionManager(context: Context) {
 
     /**
      * Checks if a token exists and is not expired.
+     * @return true if token is valid and not expired, false otherwise
      */
     fun isTokenValid(): Boolean {
         val token = getToken() ?: return false
@@ -48,6 +53,11 @@ class SessionManager(context: Context) {
         return !isTokenExpired(token)
     }
 
+    /**
+     * Validates JWT token expiry by decoding the payload and checking the 'exp' claim.
+     * @param token The JWT token to validate
+     * @return true if token is expired or invalid, false if valid
+     */
     private fun isTokenExpired(token: String): Boolean {
         try {
             val parts = token.split(".")

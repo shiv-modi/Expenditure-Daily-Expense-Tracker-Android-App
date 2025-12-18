@@ -37,14 +37,21 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnLogin.setOnClickListener {
-            val email = binding.etEmail.text.toString()
+            val email = binding.etEmail.text.toString().trim()
             val password = binding.etPassword.text.toString()
 
-            if (email.isNotEmpty() && password.isNotEmpty()) {
-                login(email, password)
-            } else {
+            if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
+            
+            // Basic email validation
+            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                Toast.makeText(this, "Please enter a valid email address", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            login(email, password)
         }
     }
 
