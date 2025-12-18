@@ -69,7 +69,16 @@ data class Lending(
     @SerializedName("description") val description: String,
     @SerializedName("date") val dateOfLending: String,
     @SerializedName("status") val status: String
-)
+) {
+    /**
+     * Returns the capitalized status for display purposes.
+     * Cached as a computed property to avoid repeated string operations.
+     */
+    val displayStatus: String
+        get() = status.replaceFirstChar { 
+            if (it.isLowerCase()) it.titlecase(java.util.Locale.getDefault()) else it.toString() 
+        }
+}
 
 data class LendingData(
     val lending: List<Lending>

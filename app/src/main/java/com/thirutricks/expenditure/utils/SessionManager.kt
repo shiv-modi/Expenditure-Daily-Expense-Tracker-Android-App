@@ -67,8 +67,8 @@ class SessionManager(context: Context) {
             }
             
             val payload = parts[1]
-            // URL safe decoding
-            val decodedBytes = Base64.decode(payload, Base64.URL_SAFE or Base64.NO_WRAP)
+            // URL safe decoding for JWT tokens
+            val decodedBytes = Base64.decode(payload, Base64.URL_SAFE)
             val decodedString = String(decodedBytes)
             val jsonObject = JSONObject(decodedString)
             

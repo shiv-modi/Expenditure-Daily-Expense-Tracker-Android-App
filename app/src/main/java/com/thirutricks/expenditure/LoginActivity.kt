@@ -92,7 +92,7 @@ class LoginActivity : AppCompatActivity() {
                 val errorMsg = when {
                     t is java.net.UnknownHostException -> "No internet connection"
                     t is java.net.SocketTimeoutException -> "Connection timeout"
-                    else -> "Network error: ${t.message}"
+                    else -> "Network error. Please check your connection"
                 }
                 Toast.makeText(this@LoginActivity, errorMsg, Toast.LENGTH_SHORT).show()
             }
